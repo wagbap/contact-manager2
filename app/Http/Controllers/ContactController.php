@@ -28,25 +28,24 @@ class ContactController extends Controller
         return view('contacts.create');
     }
 
-    public function store(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'name' => 'required|string|min:6',
-            'contact' => 'required|digits:9|unique:contacts,contact',
-            'email' => ['required', 'email', 'unique:contacts,email', 'regex:/^[^@]+@[^@]+\.[^@]+$/'] 
-        ]);       
 
-    
-        $contact = new Contact; 
-        $contact->name = $request->name; 
-        $contact->contact = $request->contact; 
-        $contact->email = $request->email; 
-        $contact->save();
-    
-        return redirect()->route('contacts.index')
-                        ->with('success', 'Contact created successfully.');
-    }
-    
+
+    public function update(Request $request, Contact $contact): RedirectResponse
+{
+    $request->validate([
+        'name' => 'required|string|min:6',
+        'contact' => 'required|digits:9|unique:contacts,contact,' . $contact->id,
+        'email' => ['required', 'email', 'unique:contacts,email,' . $contact->id, 'regex:/^[^@]+@[^@]+\.[^@]+$/']
+    ]);
+
+    $contact->name = $request->name; 
+    $contact->contact = $request->contact; 
+    $contact->email = $request->email; 
+    $contact->save();
+
+    return redirect()->route('contacts.index')
+                     ->with('success', 'Contact updated successfully.');
+}
     
     
 
