@@ -29,26 +29,6 @@ class ContactController extends Controller
     }
 
 
-
-    public function update(Request $request, Contact $contact): RedirectResponse
-{
-    $request->validate([
-        'name' => 'required|string|min:6',
-        'contact' => 'required|digits:9|unique:contacts,contact,' . $contact->id,
-        'email' => ['required', 'email', 'unique:contacts,email,' . $contact->id, 'regex:/^[^@]+@[^@]+\.[^@]+$/']
-    ]);
-
-    $contact->name = $request->name; 
-    $contact->contact = $request->contact; 
-    $contact->email = $request->email; 
-    $contact->save();
-
-    return redirect()->route('contacts.index')
-                     ->with('success', 'Contact updated successfully.');
-}
-    
-    
-
     public function show(Contact $contact): View
     {
         return view('contacts.show',compact('contact'));
@@ -60,6 +40,27 @@ class ContactController extends Controller
     {
         return view('contacts.edit', compact('contact'));
     }
+
+    public function store(Request $request): RedirectResponse
+{
+    $request->validate([
+        'name' => 'required|string|min:6',
+        'contact' => 'required|digits:9|unique:contacts,contact',
+        'email' => ['required', 'email', 'regex:/^[^@]+@[^@]+\.[^@]+$/i']
+    ]);
+
+    $contact = new Contact; 
+    $contact->name = $request->name; 
+    $contact->contact = $request->contact; 
+    $contact->email = $request->email; 
+    $contact->save();
+
+    return redirect()->route('contacts.index')
+                     ->with('success', 'Contato criado com sucesso.');
+}
+
+
+
     public function update(Request $request, Contact $contact): RedirectResponse
     {
         $request->validate([
